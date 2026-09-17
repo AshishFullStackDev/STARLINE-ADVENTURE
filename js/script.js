@@ -607,32 +607,15 @@ function shareWebsite() {
 }
 
 // ===================================================================
-// CONTACT FORM HANDLING - EmailJS Integration
+// CONTACT FORM HANDLING - Enquiry API (email) + WhatsApp click-to-chat
 // ===================================================================
-// TO USE THIS FORM:
-// 1. Sign up at https://www.emailjs.com
-// 2. Create an email service (e.g., Gmail)
-// 3. Create an email template
-// 4. Replace these values with YOUR credentials:
-
-const EMAIL_JS_CONFIG = {
-    serviceID: 'service_xxxxxxxxxxxxx',      // FROM EmailJS account
-    templateID: 'template_xxxxxxxxxxxxx',    // FROM EmailJS email template
-    publicKey: 'xxxxxxxxxxxxxxxxxxx',        // FROM EmailJS public key (Settings > API Keys)
-    // If not using EmailJS yet, set enabled: false to show setup instructions
-    enabled: false
-};
-
-// Load EmailJS SDK if configuration is enabled
-if (EMAIL_JS_CONFIG.enabled) {
-    const emailJSScript = document.createElement('script');
-    emailJSScript.type = 'text/javascript';
-    emailJSScript.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/index.min.js';
-    emailJSScript.onload = () => {
-        emailjs.init(EMAIL_JS_CONFIG.publicKey);
-    };
-    document.head.appendChild(emailJSScript);
-}
+// The contact form posts to a small backend (see server/ folder) that emails
+// every enquiry to us. Update ENQUIRY_API_URL to the deployed server's URL
+// once it's hosted (see server/README.md).
+// In addition, after a successful submit we show a WhatsApp click-to-chat
+// button pre-filled with the enquiry details - this works with zero
+// third-party API dependency (the visitor just taps it and hits send).
+const ENQUIRY_API_URL = (STARLINE_CONFIG && STARLINE_CONFIG.enquiryApiUrl) || '/api/enquiry';
 
 // Sanitize URL parameters to prevent XSS
 function getURLParameter(param) {
@@ -676,112 +659,84 @@ function preselectProductFromURL() {
     }
 }
 
-// Main form submission handler
+// Build a pre-filled WhatsApp click-to-chat message from the enquiry form data
+function buildWhatsAppEnquiryMessage(formData) {
+    return `Hello STARLINE ADVENTURES,\n\nName: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone}\nCompany: ${formData.company || 'N/A'}\nLocation: ${formData.location}\nInterested In: ${formData.product}\n\nDetails: ${formData.message}`;
+}
+
+// Main form submission handler - Send to local Node.js server with proper error handling
 function handleEnquiry(event) {
     event.preventDefault();
+    
     const form = event.target;
     const status = form.querySelector('.form-status');
     const submitBtn = form.querySelector('button[type="submit"]');
     
     if (!status) return;
     
-    // Get form data
+    // Collect form data
     const formData = {
-        name: form.querySelector('#name')?.value?.trim() || '',
-        email: form.querySelector('#email')?.value?.trim() || '',
-        company: form.querySelector('#company')?.value?.trim() || '',
-        phone: form.querySelector('#phone')?.value?.trim() || '',
-        location: form.querySelector('#location')?.value?.trim() || '',
-        product: form.querySelector('#product')?.value?.trim() || '',
-        message: form.querySelector('#message')?.value?.trim() || ''
+        name: form.querySelector('#name').value.trim(),
+        email: form.querySelector('#email').value.trim(),
+        phone: form.querySelector('#phone').value.trim(),
+        company: form.querySelector('#company').value.trim(),
+        location: form.querySelector('#location').value.trim(),
+        product: form.querySelector('#product').value.trim(),
+        message: form.querySelector('#message').value.trim()
     };
     
     // Validate required fields
-    if (!formData.name) {
-        status.textContent = 'Please enter your full name.';
-        status.style.color = '#d32f2f';
-        return;
-    }
-    if (!formData.email || !formData.email.includes('@')) {
-        status.textContent = 'Please enter a valid email address.';
-        status.style.color = '#d32f2f';
-        return;
-    }
-    if (!formData.phone) {
-        status.textContent = 'Please enter your phone number.';
-        status.style.color = '#d32f2f';
-        return;
-    }
-    if (!formData.location) {
-        status.textContent = 'Please enter your project location.';
-        status.style.color = '#d32f2f';
-        return;
-    }
-    if (!formData.product) {
-        status.textContent = 'Please select a product or activity.';
-        status.style.color = '#d32f2f';
-        return;
-    }
-    if (!formData.message) {
-        status.textContent = 'Please describe your project details.';
+    if (!formData.name || !formData.email || !formData.phone || !formData.location || !formData.product || !formData.message) {
+        status.textContent = '❌ Please fill in all required fields.';
         status.style.color = '#d32f2f';
         return;
     }
     
     // Show loading state
-    status.textContent = 'Sending your enquiry...';
+    status.textContent = '⏳ Sending your enquiry...';
     status.style.color = '#F47621';
     submitBtn.disabled = true;
     
-    if (EMAIL_JS_CONFIG.enabled) {
-        // Send via EmailJS
-        emailjs.send(
-            EMAIL_JS_CONFIG.serviceID,
-            EMAIL_JS_CONFIG.templateID,
-            {
-                to_email: 'info@starlineadventure.com',
-                from_name: formData.name,
-                from_email: formData.email,
-                company: formData.company || 'Not specified',
-                phone: formData.phone,
-                location: formData.location,
-                product: formData.product,
-                message: formData.message,
-                reply_to: formData.email
-            }
-        ).then(
-            function(response) {
-                status.textContent = "Thank you! Your enquiry has been sent. We'll be in touch within 24 hours.";
-                status.style.color = '#4caf50';
-                form.reset();
-                setTimeout(() => {
-                    status.textContent = '';
-                    submitBtn.disabled = false;
-                }, 5000);
-            },
-            function(error) {
-                status.textContent = 'Error sending enquiry. Please try again or contact us directly.';
-                status.style.color = '#d32f2f';
-                console.error('EmailJS error:', error);
-                submitBtn.disabled = false;
-            }
-        );
-    } else {
-        // Show instructions if EmailJS not configured
-        status.innerHTML = `<strong>Setup Required:</strong> This form needs EmailJS configuration. <a href="#" style="color: white; text-decoration: underline;">Click here for setup instructions</a> or contact us directly at <a href="tel:+919424904000" style="color: white; text-decoration: underline;">+91 94249 04000</a>`;
-        status.style.color = '#F47621';
+    // Get the API URL from config
+    const apiUrl = STARLINE_CONFIG?.enquiryApiUrl || 'http://localhost:3000/api/enquiry';
+    
+    // Send to server
+    fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+        timeout: 10000
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.ok) {
+            status.textContent = '✅ Enquiry sent successfully! We\'ll get back to you soon.';
+            status.style.color = '#4caf50';
+            form.reset();
+            submitBtn.disabled = false;
+            // Keep success message for 5 seconds
+            setTimeout(() => {
+                status.textContent = '';
+            }, 5000);
+        } else {
+            const errorMsg = data.error || 'Failed to send enquiry.';
+            status.textContent = `❌ Error: ${errorMsg}`;
+            status.style.color = '#d32f2f';
+            submitBtn.disabled = false;
+            console.error('Server error:', data);
+        }
+    })
+    .catch(error => {
+        console.error('Fetch error:', error);
+        status.textContent = `❌ Network error: ${error.message}. Make sure the server is running on http://localhost:3000`;
+        status.style.color = '#d32f2f';
         submitBtn.disabled = false;
-        
-        // Still send to WhatsApp as fallback
-        const message = `Hello Starline Adventures,\n\nName: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone}\nCompany: ${formData.company || 'N/A'}\nLocation: ${formData.location}\nInterested In: ${formData.product}\n\nDetails: ${formData.message}`;
-        const whatsappLink = `https://wa.me/919424904000?text=${encodeURIComponent(message)}`;
-        setTimeout(() => {
-            window.open(whatsappLink, '_blank');
-        }, 1000);
-    }
+    });
 }
 
-// Attach form submit listener
+// Attach form submit listener (FormSpree will handle actual submission)
 const enquiryForm = document.querySelector('.enquiry-form');
 if (enquiryForm) {
     enquiryForm.addEventListener('submit', handleEnquiry);
@@ -992,4 +947,131 @@ document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         closeProductModal();
     }
+});
+
+// ===== BACK-TO-TOP BUTTON =====
+function createBackToTopButton() {
+    const button = document.createElement('button');
+    button.id = 'back-to-top';
+    button.className = 'back-to-top';
+    button.innerHTML = '↑';
+    button.setAttribute('title', 'Back to top');
+    button.setAttribute('aria-label', 'Back to top');
+    document.body.appendChild(button);
+    
+    // Show/hide button based on scroll
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+            button.classList.add('visible');
+        } else {
+            button.classList.remove('visible');
+        }
+    });
+    
+    // Scroll to top smoothly
+    button.addEventListener('click', () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+}
+
+// Initialize back-to-top button
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', createBackToTopButton);
+} else {
+    createBackToTopButton();
+}
+
+// ===== SCROLL PROGRESS BAR =====
+function createScrollProgressBar() {
+    const progressBar = document.createElement('div');
+    progressBar.className = 'scroll-progress-bar';
+    document.body.insertBefore(progressBar, document.body.firstChild);
+    
+    window.addEventListener('scroll', () => {
+        const scrollTop = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const scrollPercent = (scrollTop / docHeight) * 100;
+        progressBar.style.width = scrollPercent + '%';
+    });
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', createScrollProgressBar);
+} else {
+    createScrollProgressBar();
+}
+
+// ===== CURRENT PAGE HIGHLIGHT IN NAV =====
+document.addEventListener('DOMContentLoaded', () => {
+    const currentLocation = location.pathname.split('/').pop() || 'index.html';
+    const navLinks = document.querySelectorAll('.nav-menu a');
+    const navDropdownButtons = document.querySelectorAll('.nav-dropdown-toggle');
+    
+    // Check direct links
+    navLinks.forEach(link => {
+        const href = link.getAttribute('href');
+        if (href === currentLocation || (currentLocation === '' && href === 'index.html')) {
+            link.classList.add('current-page');
+        }
+    });
+    
+    // Check dropdown menus for current page and highlight the button
+    navDropdownButtons.forEach(button => {
+        const dropdownMenu = button.nextElementSibling;
+        if (dropdownMenu && dropdownMenu.classList.contains('nav-dropdown-menu')) {
+            const links = dropdownMenu.querySelectorAll('a');
+            links.forEach(link => {
+                const href = link.getAttribute('href').split('#')[0] || 'index.html'; // Handle anchor links
+                if (href === currentLocation || href.split('/').pop() === currentLocation) {
+                    // Highlight the dropdown button
+                    button.classList.add('current-page');
+                }
+            });
+        }
+    });
+});
+
+// ===== NEWSLETTER FORM HANDLER =====
+document.addEventListener('DOMContentLoaded', () => {
+    const newsletterForms = document.querySelectorAll('.newsletter-form');
+    
+    newsletterForms.forEach(form => {
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const email = form.querySelector('input[type="email"]').value.trim();
+            const button = form.querySelector('button[type="submit"]');
+            const originalText = button.textContent;
+            
+            // Validate email
+            if (!email || !email.includes('@')) {
+                alert('Please enter a valid email address');
+                return;
+            }
+            
+            // Disable button during submission
+            button.disabled = true;
+            button.textContent = 'Subscribing...';
+            
+            // Simulate API call (you can replace with actual API endpoint)
+            setTimeout(() => {
+                // Show success message
+                button.textContent = '✅ Subscribed!';
+                button.style.background = '#4caf50';
+                
+                // Reset form
+                form.reset();
+                
+                // Reset button after 3 seconds
+                setTimeout(() => {
+                    button.disabled = false;
+                    button.textContent = originalText;
+                    button.style.background = '';
+                }, 3000);
+            }, 800);
+        });
+    });
 });

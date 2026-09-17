@@ -9,7 +9,7 @@ const STARLINE_CONFIG = {
     
     // Contact Information
     contactPhone: '+91 94249 04000',
-    contactEmail: 'info@starlineadventure.com',
+    contactEmail: 'starlineadventure@gmail.com',
     whatsappNumber: '+919424904000',
     whatsappMessage: 'Hello STARLINE ADVENTURES, I am interested in your adventure rides and would like more information.',
     
@@ -32,6 +32,13 @@ const STARLINE_CONFIG = {
     
     // URLs
     mapsLink: 'https://maps.app.goo.gl/ZfGAxr5sR2J8ZRk66',
+
+    // Enquiry backend endpoint (see server/README.md).
+    // - For local testing: run the server (cd server && npm run dev) and use
+    //   'http://localhost:3000/api/enquiry' (as below).
+    // - For production: change this to your deployed server's URL, e.g.
+    //   'https://your-server.onrender.com/api/enquiry'
+    enquiryApiUrl: 'http://localhost:3000/api/enquiry',
     
     // Website metadata
     websiteUrl: 'https://starlineadventures.com', // Update with actual domain
