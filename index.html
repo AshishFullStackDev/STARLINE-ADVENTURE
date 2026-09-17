@@ -69,13 +69,37 @@
         }
         </script>
 
-        <title>Adventure Ride Manufacturer & Installation Specialist | Starline Adventures</title>
+        <title>Adventure Ride Manufacturer | Starline Adventures</title>
 
         <link rel="stylesheet" href="css/style.css">
         <script src="js/config.js"></script>
     </head>
 
     <body>
+
+        <!-- =========================
+            TOP INFO BAR
+        ========================== -->
+        <div class="top-info-bar">
+            <div class="container">
+                <div class="top-info-content">
+                    <div class="top-info-section">
+                        <span class="top-info-icon">📍</span>
+                        <span>Nagpur, Maharashtra, India</span>
+                    </div>
+                    <div class="top-info-contact">
+                        <div class="top-info-section">
+                            <span class="top-info-icon">📞</span>
+                            <a href="tel:+919424904000">+91 94249 04000</a>
+                        </div>
+                        <div class="top-info-section">
+                            <span class="top-info-icon">📧</span>
+                            <a href="mailto:starlineadventure@gmail.com">starlineadventure@gmail.com</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- =========================
             HEADER
@@ -127,26 +151,31 @@
                             </button>
                             <div class="nav-dropdown-menu" id="products-navigation">
                                 <a href="products.html">All Products</a>
-                                <a href="products.html#zip-line">Adventure Rides</a>
+                                <a href="products.html#activities">Adventure Activities</a>
                                 <a href="products.html#safety">Safety Equipment</a>
                             </div>
                         </div>
 
-                        <a href="portfolio.html">
-                            Projects
-                        </a>
+                        <div class="nav-dropdown">
+                            <button class="nav-dropdown-toggle" type="button" aria-expanded="false" aria-haspopup="true" aria-controls="portfolio-navigation">
+                                Projects <span class="nav-arrow" aria-hidden="true">&#9662;</span>
+                            </button>
+                            <div class="nav-dropdown-menu" id="portfolio-navigation">
+                                <a href="portfolio.html">All Projects</a>
+                                <a href="gallery.html">Gallery</a>
+                            </div>
+                        </div>
 
                         <a href="team.html">
                             Team
                         </a>
 
                         <a href="testimonials.html">
-                            Testimonials / References
+                            Testimonials
                         </a>
 
-                        <a href="contact.html"
-                            class="nav-contact-btn">
-                            Get a Quote
+                        <a href="contact.html">
+                            Contact
                         </a>
 
                     </nav>
@@ -171,12 +200,12 @@
                         <div class="slide-overlay">
                             <div class="container hero-slide-content-wrap">
                                 <div class="slide-content">
-                                    <p class="hero-eyebrow">ADVENTURE RIDE MANUFACTURER &amp; INSTALLATION SPECIALIST</p>
-                                    <h1>Building Adventure Rides.<br><span>Delivering Experiences.</span></h1>
-                                    <p>We manufacture adventure rides and provide professional installation solutions for resorts, adventure parks, tourism destinations and recreational projects across India.</p>
+                                    <p class="hero-eyebrow">ADVENTURE RIDES &amp; INSTALLATION</p>
+                                    <h1>Building Adventure<br><span>Delivering Experiences</span></h1>
+                                    <p>Professional adventure ride manufacturing and installation solutions across India.</p>
                                     <div class="hero-actions">
-                                        <a href="products.html#zip-line" class="btn btn-primary">Explore Adventure Rides</a>
-                                        <a href="contact.html" class="btn btn-secondary">Request a Quote</a>
+                                        <a href="products.html#zip-line" class="btn btn-primary">Explore Products</a>
+                                        <a href="contact.html" class="btn btn-secondary">Get Quote</a>
                                     </div>
                                 </div>
                             </div>
@@ -189,11 +218,11 @@
                             <div class="container hero-slide-content-wrap">
                                 <div class="slide-content">
                                     <p class="hero-eyebrow">ENGINEERED FOR ADVENTURE</p>
-                                    <h1>Adventure Rides<br><span>Built for Experiences.</span></h1>
-                                    <p>From ride manufacturing to professional installation, we deliver practical adventure solutions tailored to project requirements.</p>
+                                    <p class="hero-title">Adventure Rides<br><span>Built to Last</span></p>
+                                    <p>Ride manufacturing and professional installation services tailored to your project needs.</p>
                                     <div class="hero-actions">
-                                        <a href="products.html" class="btn btn-primary">View Our Rides</a>
-                                        <a href="contact.html" class="btn btn-secondary">Start Your Project</a>
+                                        <a href="products.html" class="btn btn-primary">View Products</a>
+                                        <a href="contact.html" class="btn btn-secondary">Start Project</a>
                                     </div>
                                 </div>
                             </div>
@@ -205,12 +234,12 @@
                         <div class="slide-overlay">
                             <div class="container hero-slide-content-wrap">
                                 <div class="slide-content">
-                                    <p class="hero-eyebrow">COMPLETE PROJECT SOLUTIONS</p>
-                                    <h1>From Manufacturing<br><span>to Installation.</span></h1>
-                                    <p>We manufacture adventure rides and support their professional installation for projects across India.</p>
+                                    <p class="hero-eyebrow">COMPLETE SOLUTIONS</p>
+                                    <p class="hero-title">Manufacturing to<br><span>Installation</span></p>
+                                    <p>End-to-end adventure ride solutions for projects across India.</p>
                                     <div class="hero-actions">
-                                        <a href="products.html" class="btn btn-primary">Explore Our Rides</a>
-                                        <a href="contact.html" class="btn btn-secondary">Talk to Our Team</a>
+                                        <a href="products.html" class="btn btn-primary">Explore Rides</a>
+                                        <a href="contact.html" class="btn btn-secondary">Contact Us</a>
                                     </div>
                                 </div>
                             </div>
@@ -675,14 +704,14 @@
 
 
                         <a class="footer-contact-link"
-                            href="mailto:info@starlineadventure.com">
+                            href="mailto:starlineadventure@gmail.com">
 
                             <span class="footer-icon"
                                 aria-hidden="true">
                                 &#9993;
                             </span>
 
-                            info@starlineadventure.com
+                            starlineadventure@gmail.com
 
                         </a>
 
@@ -703,25 +732,64 @@
                 </div>
 
 
-                <div class="footer-bottom">
+                <div class="footer-section">
 
-                    <p>
-                        &copy; 2026 STARLINE ADVENTURES PVT LTD.
-                        All Rights Reserved.
-                    </p>
+                    <h3>
+                        Follow Us
+                    </h3>
+
+                    <div class="footer-social-links">
+
+                        <a href="https://www.facebook.com/starlineadventures" target="_blank" rel="noopener noreferrer" aria-label="Follow us on Facebook" title="Facebook">
+
+                            <span class="footer-social-icon">f</span>
+
+                        </a>
+
+                        <a href="https://www.instagram.com/starlineadventures" target="_blank" rel="noopener noreferrer" aria-label="Follow us on Instagram" title="Instagram">
+
+                            <span class="footer-social-icon">📷</span>
+
+                        </a>
+
+                        <a href="https://www.youtube.com/@starlineadventures" target="_blank" rel="noopener noreferrer" aria-label="Subscribe to our YouTube channel" title="YouTube">
+
+                            <span class="footer-social-icon">▶</span>
+
+                        </a>
+
+                        <a href="https://www.linkedin.com/company/starlineadventures" target="_blank" rel="noopener noreferrer" aria-label="Connect with us on LinkedIn" title="LinkedIn">
+
+                            <span class="footer-social-icon">in</span>
+
+                        </a>
+
+                    </div>
 
                 </div>
 
             </div>
 
-        </footer>
+
+            <div class="footer-bottom">
+
+                <p>
+                    &copy; 2026 STARLINE ADVENTURES PVT LTD.
+                    All Rights Reserved.
+                    </p>
+
+                </div>
+
+            </footer>
 
 
 
         <!-- Main JavaScript -->
+        <!-- WhatsApp Chat Button -->
+        <a href="https://wa.me/919424904000?text=Hello%20STARLINE%20ADVENTURES%2C%20I%20am%20interested%20in%20your%20adventure%20rides%20and%20would%20like%20more%20information." class="whatsapp-float" target="_blank" rel="noopener noreferrer" title="Chat on WhatsApp">
+            <span>💬</span>
+        </a>
+
         <script src="js/script.js"></script>
-
-
     </body>
-
     </html>
